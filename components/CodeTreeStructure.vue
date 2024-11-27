@@ -1,9 +1,11 @@
 <template>
   <ul>
     <li v-for="item in items" :key="item.id">
-      <!-- Folder with expandable details -->
       <details v-if="item.children" open>
-        <summary class="flex items-center space-x-2">
+        <summary
+            class="flex items-center space-x-2 cursor-pointer"
+            @click.prevent="onItemClick(item)"
+        >
           <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -20,12 +22,16 @@
           </svg>
           <span>{{ item.name }}</span>
         </summary>
-        <!-- Recursive rendering for child items -->
-        <CodeTreeStructure :items="item.children" />
+
+        <CodeTreeStructure :items="item.children" @item-click="emit('item-click', $event)" />
       </details>
 
       <!-- File (no children) -->
-      <div v-else class="flex items-center space-x-2">
+      <div
+          v-else
+          class="flex items-center space-x-2 cursor-pointer"
+          @click.prevent="onItemClick(item)"
+      >
         <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -34,11 +40,10 @@
             stroke="currentColor"
             class="h-4 w-4"
         >
-          <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              :d="item.icon"
-          />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+            <path stroke-linecap="round" stroke-linejoin="round" :d="item.icon" />
+          </svg>
+
         </svg>
         <span>{{ item.name }}</span>
       </div>
@@ -47,10 +52,20 @@
 </template>
 
 <script setup>
+
 defineProps({
   items: {
     type: Array,
     required: true,
   },
 });
+
+
+const emit = defineEmits(['item-click']);  // Define the 'item-click' event
+
+// This method will emit the event back to the parent component
+const onItemClick = (item) => {
+  emit('item-click', item);  // Emit the selected item to the parent component
+};
+
 </script>
